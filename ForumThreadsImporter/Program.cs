@@ -1,41 +1,36 @@
-﻿using ForumThreadsImporter.Crawler;
+﻿using Quartz;
+using Quartz.Impl;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ForumThreadsImporter
 {
     class Program
     {
-        internal const string vstsCollectionUrl = "https://prgs-sitefinity.visualstudio.com";
-        internal const string pat = "";
 
         static void Main(string[] args)
         {
-            var forumsCrawler = new ForumsCrawler(new MarkupProvider());
-            var threads = forumsCrawler.GetThreads();
+            CreateScheduler();
+            Console.ReadLine();
+        }
 
-            // get only threads that are not answered and are new
-            threads = threads.Where(x => !x.IsAnswered && x.PostsCount == 1);
+        private static async void CreateScheduler()
+        {
+            var scheduler = await StdSchedulerFactory.GetDefaultScheduler();
+            await scheduler.Start();
 
-            var azureDevOpsService = new AzureDevOpsService(vstsCollectionUrl, pat);
+            IJobDetail job = JobBuilder.Create<ImportJob>().Build();
 
-            var rfaWorkItem = azureDevOpsService.GetWorkItem("RFA");
-            if (rfaWorkItem != null)
-            {
-                var childrenWorkItems = azureDevOpsService.GetChildrenWorkItems(rfaWorkItem);
-                var childrenWorkItemsTitles = childrenWorkItems.Select(x => x.Fields[Constants.Title].ToString()).ToList();
+            ITrigger trigger = TriggerBuilder.Create()
+                .StartNow()
+                .WithDailyTimeIntervalSchedule
+                  (s =>
+                     s.WithIntervalInHours(24)
+                    .OnEveryDay()
+                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(11, 40))
+                  )
+                .Build();
 
-                foreach (var thread in threads)
-                {
-                    var threadTitle = $"Forum: {thread.Title}";
-                    var isAlreadyLogged = childrenWorkItemsTitles.Contains(threadTitle) || threadTitle == "Forum: Test thread 01";
-                    if (!isAlreadyLogged)
-                    {
-                        azureDevOpsService.CreateAndLinkToWorkItem(rfaWorkItem, threadTitle, thread.Link);
-                    }
-                }
-            }
+            await scheduler.ScheduleJob(job, trigger);
         }
     }
 }
