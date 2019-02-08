@@ -26,7 +26,7 @@ namespace ForumThreadsImporter
                   (s =>
                      s.WithIntervalInHours(24)
                     .OnEveryDay()
-                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(11, 40))
+                    .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(9, 30))
                   )
                 .Build();
 
