@@ -1,4 +1,5 @@
 ﻿using ForumThreadsImporter.Crawler;
+using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Quartz;
 using System;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace ForumThreadsImporter
     class ImportJob : IJob
     {
         internal const string vstsCollectionUrl = "https://prgs-sitefinity.visualstudio.com";
-        internal const string pat = "";
+        internal const string pat = "vzbpktabxd42m7ikgv575vimfjf7rhczwcfk4s3uzagxm7hvjxzq";
 
         public Task Execute(IJobExecutionContext context)
         {
@@ -23,7 +24,18 @@ namespace ForumThreadsImporter
 
             var azureDevOpsService = new AzureDevOpsService(vstsCollectionUrl, pat);
 
-            var rfaWorkItem = azureDevOpsService.GetWorkItem("RFA");
+            WorkItem rfaWorkItem = null;
+
+            try
+            {
+                rfaWorkItem = azureDevOpsService.GetWorkItem("RFA");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+
             if (rfaWorkItem != null)
             {
                 Console.WriteLine($"Found RFA");

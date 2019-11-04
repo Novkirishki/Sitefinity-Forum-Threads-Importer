@@ -25,7 +25,7 @@ namespace ForumThreadsImporter
             connection = new VssConnection(new Uri(vstsCollectionUrl), new VssBasicCredential(string.Empty, pat));
         }
 
-        public WorkItem GetWorkItem(string title = "RFA", string type = Constants.PBI, string area = "sitefinity\\Arke", string iteration = "@CurrentIteration")
+        public WorkItem GetWorkItem(string title = "RFA", string type = Constants.PBI, string area = "sitefinity\\Arke", string iteration = "@currentIteration('[sitefinity]\\Arke <id:22bafa7e-b3fa-4e91-8f41-0702715d148a>')")
         {         
             WorkItemTrackingHttpClient witClient = this.connection.GetClient<WorkItemTrackingHttpClient>();
 
