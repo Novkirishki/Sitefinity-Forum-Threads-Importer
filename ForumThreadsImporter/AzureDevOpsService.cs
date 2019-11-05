@@ -115,22 +115,27 @@ namespace ForumThreadsImporter
             WorkItemTrackingHttpClient witClient = this.connection.GetClient<WorkItemTrackingHttpClient>();
 
             // check whether the thread is not already imported
-            List<int> list = new List<int>();
-
-            foreach (var relation in parentItem.Relations)
+            if (parentItem.Relations != null)
             {
-                //get the child links
-                if (relation.Rel == "System.LinkTypes.Hierarchy-Forward")
+                List<int> list = new List<int>();
+
+                foreach (var relation in parentItem.Relations)
                 {
-                    var lastIndex = relation.Url.LastIndexOf("/");
-                    var itemId = relation.Url.Substring(lastIndex + 1);
-                    list.Add(Convert.ToInt32(itemId));
-                };
+                    //get the child links
+                    if (relation.Rel == "System.LinkTypes.Hierarchy-Forward")
+                    {
+                        var lastIndex = relation.Url.LastIndexOf("/");
+                        var itemId = relation.Url.Substring(lastIndex + 1);
+                        list.Add(Convert.ToInt32(itemId));
+                    };
+                }
+
+                int[] workitemIds = list.ToArray();
+
+                return witClient.GetWorkItemsAsync(workitemIds, expand: WorkItemExpand.Fields).Result;
             }
 
-            int[] workitemIds = list.ToArray();
-
-            return witClient.GetWorkItemsAsync(workitemIds, expand: WorkItemExpand.Fields).Result;
+            return new List<WorkItem>();
         }
     }
 }
