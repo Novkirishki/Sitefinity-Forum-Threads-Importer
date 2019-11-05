@@ -26,7 +26,7 @@ namespace ForumThreadsImporter
         }
 
         public WorkItem GetWorkItem(string title = "RFA", string type = Constants.PBI, string area = "sitefinity\\Arke", string iteration = "@currentIteration('[sitefinity]\\Arke <id:22bafa7e-b3fa-4e91-8f41-0702715d148a>')")
-        {         
+        {
             WorkItemTrackingHttpClient witClient = this.connection.GetClient<WorkItemTrackingHttpClient>();
 
             var teamContext = new TeamContext(Constants.SitefinityProjectName);
@@ -35,7 +35,7 @@ namespace ForumThreadsImporter
                            $"WHERE [Work Item Type] = '{type}' " +
                                $"AND [{Constants.Area}] = '{area}' " +
                                $"AND [{Constants.Iteration}] = {iteration} " +
-                               $"AND [{Constants.Title}] CONTAINS '{title}' ";
+                               $"AND [{Constants.Title}] CONTAINS WORDS '{title}' ";
 
             var wiqlQuery = new Wiql() { Query = query };
 
@@ -130,9 +130,11 @@ namespace ForumThreadsImporter
                     };
                 }
 
-                int[] workitemIds = list.ToArray();
-
-                return witClient.GetWorkItemsAsync(workitemIds, expand: WorkItemExpand.Fields).Result;
+                if (list.Count > 0)
+                {
+                    int[] workitemIds = list.ToArray();
+                    return witClient.GetWorkItemsAsync(workitemIds, expand: WorkItemExpand.Fields).Result;
+                }
             }
 
             return new List<WorkItem>();
