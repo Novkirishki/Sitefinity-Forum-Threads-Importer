@@ -49,7 +49,7 @@ namespace ForumThreadsImporter
                     if (!isAlreadyLogged)
                     {
                         Console.WriteLine($"Logs thread: {threadTitle}");
-                        azureDevOpsService.CreateAndLinkToWorkItem(rfaWorkItem, threadTitle, thread.Link);
+                        azureDevOpsService.CreateAndLinkToWorkItem(rfaWorkItem, threadTitle, $"<a href='{thread.Link}'>{thread.Link}</a>");
                     }
                 }
             }
