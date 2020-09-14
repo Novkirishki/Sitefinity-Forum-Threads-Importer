@@ -11,6 +11,7 @@
         // field name 
         public const string Title = "System.Title";
         public const string Iteration = "System.IterationPath";
+        public const string State = "System.State";
         public const string Area = "System.AreaPath";
         public const string Description = "System.Description";
 

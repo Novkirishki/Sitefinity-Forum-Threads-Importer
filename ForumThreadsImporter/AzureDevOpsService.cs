@@ -25,7 +25,7 @@ namespace ForumThreadsImporter
             connection = new VssConnection(new Uri(vstsCollectionUrl), new VssBasicCredential(string.Empty, pat));
         }
 
-        public WorkItem GetWorkItem(string title = "RFA", string type = Constants.PBI, string area = "sitefinity\\CMS\\Arke", string iteration = "@currentIteration('[sitefinity]\\Arke <id:22bafa7e-b3fa-4e91-8f41-0702715d148a>')")
+        public WorkItem GetWorkItem(string title = "RFA", string type = Constants.PBI, string area = "sitefinity\\CMS\\Arke", string iteration = "@currentIteration('[sitefinity]\\Arke <id:22bafa7e-b3fa-4e91-8f41-0702715d148a>')", string state = "Committed")
         {
             WorkItemTrackingHttpClient witClient = this.connection.GetClient<WorkItemTrackingHttpClient>();
 
@@ -35,6 +35,7 @@ namespace ForumThreadsImporter
                            $"WHERE [Work Item Type] = '{type}' " +
                                $"AND [{Constants.Area}] = '{area}' " +
                                $"AND [{Constants.Iteration}] = {iteration} " +
+                               $"AND [{Constants.State}] = '{state}' " +
                                $"AND [{Constants.Title}] CONTAINS WORDS '{title}' ";
 
             var wiqlQuery = new Wiql() { Query = query };
